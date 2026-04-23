@@ -1,0 +1,99 @@
+{
+  "entities": {
+    "User": {
+      "title": "Usuário",
+      "description": "Perfil do jogador na Taverna.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "username": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "gold": { "type": "number" },
+        "isRegistered": { "type": "boolean" },
+        "isVip": { "type": "boolean" },
+        "wins": { "type": "number" },
+        "losses": { "type": "number" },
+        "totalMatches": { "type": "number" }
+      },
+      "required": ["uid", "username", "email", "gold", "isRegistered"]
+    },
+    "Transaction": {
+      "title": "Transação",
+      "description": "Histórico de depósitos e saques.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "type": { "type": "string", "enum": ["deposit", "withdrawal"] },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "completed", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "type", "amount", "status", "createdAt"]
+    },
+    "Match": {
+      "title": "Partida",
+      "description": "Histórico de partidas do jogador.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "players": { "type": "array", "items": { "type": "string" } },
+        "gameTitle": { "type": "string" },
+        "winnerId": { "type": "string" },
+        "bet": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "players", "gameTitle", "winnerId", "createdAt"]
+    },
+    "AppStats": {
+      "title": "Estatisticas do App",
+      "description": "Contadores globais do reino.",
+      "type": "object",
+      "properties": {
+        "totalUsers": { "type": "number" },
+        "onlineUsers": { "type": "number" },
+        "totalGoldInCirculation": { "type": "number" },
+        "houseProfit": { "type": "number" },
+        "pvpFee": { "type": "number" },
+        "pvhFee": { "type": "number" }
+      }
+    },
+    "Room": {
+      "title": "Sala de Jogo",
+      "description": "Sala criada para duelos PvP.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "gameId": { "type": "string" },
+        "gameTitle": { "type": "string" },
+        "creatorId": { "type": "string" },
+        "creatorName": { "type": "string" },
+        "status": { "type": "string", "enum": ["waiting", "playing"] },
+        "guestId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "gameId", "gameTitle", "creatorId", "creatorName", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "Documento de perfil individual do usuário."
+    },
+    "rooms/{roomId}": {
+      "schema": "Room",
+      "description": "Salas de jogo para duelos PvP."
+    },
+    "transactions/{transactionId}": {
+      "schema": "Transaction",
+      "description": "Depósitos e saques dos jogadores."
+    },
+    "matches/{matchId}": {
+      "schema": "Match",
+      "description": "Resultados das batalhas."
+    },
+    "stats/global": {
+      "schema": "AppStats",
+      "description": "Números globais do reino."
+    }
+  }
+}

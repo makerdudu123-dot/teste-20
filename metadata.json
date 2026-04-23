@@ -1,0 +1,9 @@
+{
+  "name": "A Taverna do Rei",
+  "description": "Um cassino medieval com jogos de estratégia, sorte e a casa real.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "gaming",
+    "animations"
+  ]
+}
