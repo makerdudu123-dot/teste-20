@@ -18,6 +18,7 @@ interface Room {
   creatorId: string;
   creatorName: string;
   guestId?: string;
+  guestName?: string;
   status: 'waiting' | 'ready' | 'playing';
   bet: number;
   createdAt: any;
@@ -163,7 +164,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
     const unsubscribeRooms = onSnapshot(roomsQuery, (snapshot) => {
       const roomList: Room[] = [];
       snapshot.forEach((doc) => {
-        roomList.push(doc.data() as Room);
+        const data = doc.data() as Room;
+        // Ensure the ID is always present and synchronized with doc ID
+        roomList.push({ ...data, id: doc.id });
       });
       setRooms(roomList);
     });
@@ -393,7 +396,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
     await updateDoc(roomRef, {
       status: 'ready',
-      guestId: user.uid
+      guestId: user.uid,
+      guestName: user.username
     });
   };
 

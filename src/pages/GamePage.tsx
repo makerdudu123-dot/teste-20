@@ -37,6 +37,16 @@ export default function GamePage() {
   const Component = GameComponents[id as string];
 
   const currentRoom = rooms.find(r => r.id === roomId);
+  
+  if (game.type === 'PvP' && !currentRoom && !authLoading) {
+    return (
+      <div className="text-white text-center py-20 flex flex-col items-center gap-4">
+        <h2 className="font-cinzel text-2xl text-medieval-gold">Sala não encontrada</h2>
+        <p className="font-medieval text-stone-400">Esta sala pode ter sido fechada ou o duelo expirado.</p>
+        <button onClick={() => navigate('/category/duelos')} className="px-6 py-2 bg-medieval-gold text-black rounded-lg font-bold">Voltar aos Duelos</button>
+      </div>
+    );
+  }
 
   useEffect(() => {
      if (!authLoading && !user) {
@@ -44,11 +54,21 @@ export default function GamePage() {
      }
   }, [user, authLoading, navigate]);
 
+  if (authLoading || !user) return (
+    <div className="flex items-center justify-center min-h-[500px] text-medieval-gold">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-12 h-12 border-4 border-medieval-gold/20 border-t-medieval-gold rounded-full animate-spin" />
+        <p className="font-cinzel text-xl uppercase tracking-widest animate-pulse">Invocando Guerreiro...</p>
+      </div>
+    </div>
+  );
+
   if (!game || !Component) return <div className="text-white text-center py-20">Jogo não encontrado</div>;
 
   const isWaiting = game.type === 'PvP' && currentRoom && (currentRoom.status === 'waiting' || currentRoom.status === 'ready');
   const isReady = currentRoom?.status === 'ready';
   const isCreator = currentRoom?.creatorId === user?.uid;
+  const isGuest = currentRoom?.guestId === user?.uid;
 
   const handleCloseRoom = async () => {
     if (currentRoom) {
@@ -110,12 +130,12 @@ export default function GamePage() {
                
                <div>
                   <h2 className="font-cinzel text-3xl font-bold text-medieval-gold mb-2 uppercase tracking-tighter">
-                    {isReady ? "Oponente Encontrado!" : "Aguardando Oponente"}
+                    {isReady ? (isCreator ? "Oponente Encontrado!" : "Conectado ao Duelo!") : "Aguardando Oponente"}
                   </h2>
                   <p className="font-medieval text-stone-400 text-lg max-w-sm mx-auto leading-relaxed italic">
                      {isCreator 
                        ? (isReady ? "Um bravo guerreiro aceitou seu desafio. Deseja iniciar o combate?" : "Seu desafio foi lançado ao reino. Aguarde um guerreiro digno aceitá-lo...") 
-                       : (isReady ? "Aguardando o mestre da sala soar as trombetas da guerra..." : "Desafiando mestre da sala... Prepare seu espírito!")}
+                       : (isReady ? `Você está pronto! Aguarde ${currentRoom?.creatorName} soar as trombetas da guerra...` : "Desafiando mestre da sala... Prepare seu espírito!")}
                   </p>
                </div>
 
